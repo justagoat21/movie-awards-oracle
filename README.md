@@ -1,73 +1,81 @@
-# Welcome to your Lovable project
 
-## Project info
+# Movie Awards Oracle
 
-**URL**: https://lovable.dev/projects/c3bf15b5-3c42-4056-9556-45fd8fea77a0
+A desktop application that connects to a remote MySQL database and provides an interface to manage and analyze Oscar and nomination data related to movies and staff members.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- 🎬 Register a user account
+- 🏆 Add a new user nomination for a staff member for a given movie
+- 📜 View existing nominations for the user
+- 🌟 View top nominated movies by system users (by category/year)
+- 🎭 Show total nominations and Oscars for a given director, actor, and singer
+- 🌍 Show top 5 birth countries for actors who won Best Actor
+- 🗺️ Show all nominated staff from a given country
+- 🎥 Dream Team: Best living cast (director, actors, producer, singer)
+- 🏢 Top 5 production companies by Oscars won
+- 🌐 List all non-English speaking Oscar-winning movies with year
 
-**Use Lovable**
+## Requirements
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/c3bf15b5-3c42-4056-9556-45fd8fea77a0) and start prompting.
+- Python 3.7 or higher
+- MySQL database connection
+- Required Python packages:
+  - pymysql
+  - pyinstaller (for building the executable)
 
-Changes made via Lovable will be committed automatically to this repo.
+## Installation
 
-**Use your preferred IDE**
+### From Source
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. Clone this repository
+2. Install dependencies:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+pip install -r requirements.txt
 ```
 
-**Edit a file directly in GitHub**
+3. Run the application:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+python src/main.py
+```
 
-**Use GitHub Codespaces**
+### From Executable
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Download the latest release
+2. Run the .exe file (Windows) or application bundle (macOS)
 
-## What technologies are used for this project?
+## Building the Executable
 
-This project is built with:
+To build the executable yourself:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+python build.py
+```
 
-## How can I deploy this project?
+This will create an executable in the `dist` folder.
 
-Simply open [Lovable](https://lovable.dev/projects/c3bf15b5-3c42-4056-9556-45fd8fea77a0) and click on Share -> Publish.
+## Database Connection
 
-## Can I connect a custom domain to my Lovable project?
+The application connects to a MySQL database with the following details:
 
-Yes, you can!
+- Host: sql7.freesqldatabase.com
+- Database: sql7774986
+- User: sql7774986
+- Port: 3306
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+(Note: Password is stored in the application code)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Project Structure
+
+- `src/main.py`: Main application entry point
+- `src/gui.py`: User interface components
+- `src/database.py`: Database connection and query functions
+- `src/models.py`: Data models
+- `src/utils.py`: Utility functions
+- `build.py`: Script for building the executable
+
+## License
+
+This project is open-source software.
