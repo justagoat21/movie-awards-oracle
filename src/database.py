@@ -1,5 +1,6 @@
 import pymysql
 from typing import List, Dict, Any, Optional, Tuple
+from datetime import date
 
 class Database:
     """Database connection and query manager"""
@@ -33,16 +34,24 @@ class Database:
         if self.connection:
             self.connection.close()
     
-    def register_user(self, username: str, password: str, email: str) -> bool:
-        """Register a new user in the system"""
+    def register_user(self, username: str, email: str, birth_date: date, gender: str, country: str) -> bool:
+        """Register a new user in the system with extended attributes"""
         if not self.connection:
             self.connect()
             
         try:
             with self.connection.cursor() as cursor:
-                # SQL: INSERT INTO users (username, password_hash, email) VALUES (%s, %s, %s)
-                # In actual implementation, password should be hashed
-                cursor.execute("SELECT 1")  # Placeholder for actual query
+                # Calculate age from birth_date
+                today = date.today()
+                age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+                
+                # SQL: INSERT INTO user (Username, EmailAddress, BirthDate, Age, Gender, Country) 
+                # VALUES (%s, %s, %s, %s, %s, %s)
+                cursor.execute("""
+                    INSERT INTO user (Username, EmailAddress, BirthDate, Age, Gender, Country) 
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """, (username, email, birth_date, age, gender, country))
+                
                 self.connection.commit()
                 return True
         except Exception as e:

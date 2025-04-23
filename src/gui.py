@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 import threading
 from typing import Callable, Dict, List, Any, Optional
-
+from datetime import datetime, date
 from database import Database
 import utils
 
@@ -277,57 +277,79 @@ class OscarsAppGUI:
         
     # Feature button callback functions
     def register_user(self):
-        """Register a new user"""
+        """Register a new user with extended attributes"""
         if self.current_user:
             messagebox.showinfo("Already Logged In", "You are already logged in. Log out to register a new user.")
             return
             
         dialog = tk.Toplevel(self.root)
         dialog.title("Register User")
-        dialog.geometry("350x250")
+        dialog.geometry("400x500")
         dialog.transient(self.root)
         dialog.grab_set()
         
+        # Username
         ttk.Label(dialog, text="Username:").pack(pady=(10, 5))
         username_entry = ttk.Entry(dialog, width=30)
         username_entry.pack(pady=5)
         
+        # Email
         ttk.Label(dialog, text="Email:").pack(pady=5)
         email_entry = ttk.Entry(dialog, width=30)
         email_entry.pack(pady=5)
         
-        ttk.Label(dialog, text="Password:").pack(pady=5)
-        password_entry = ttk.Entry(dialog, width=30, show="*")
-        password_entry.pack(pady=5)
+        # Birth Date
+        ttk.Label(dialog, text="Birth Date (YYYY-MM-DD):").pack(pady=5)
+        birth_date_entry = ttk.Entry(dialog, width=30)
+        birth_date_entry.pack(pady=5)
         
-        ttk.Label(dialog, text="Confirm Password:").pack(pady=5)
-        confirm_entry = ttk.Entry(dialog, width=30, show="*")
-        confirm_entry.pack(pady=5)
+        # Gender
+        ttk.Label(dialog, text="Gender:").pack(pady=5)
+        gender_var = tk.StringVar(dialog)
+        genders = ["Male", "Female", "Other"]
+        gender_combo = ttk.Combobox(dialog, textvariable=gender_var, values=genders, width=27)
+        gender_combo.pack(pady=5)
+        
+        # Country
+        ttk.Label(dialog, text="Country:").pack(pady=5)
+        country_entry = ttk.Entry(dialog, width=30)
+        country_entry.pack(pady=5)
+        
+        def validate_date(date_str: str) -> Optional[date]:
+            try:
+                return datetime.strptime(date_str, '%Y-%m-%d').date()
+            except ValueError:
+                return None
         
         def on_submit():
-            username = username_entry.get()
-            email = email_entry.get()
-            password = password_entry.get()
-            confirm = confirm_entry.get()
+            username = username_entry.get().strip()
+            email = email_entry.get().strip()
+            birth_date_str = birth_date_entry.get().strip()
+            gender = gender_var.get().strip()
+            country = country_entry.get().strip()
             
-            if not username or not email or not password or not confirm:
+            # Validation
+            if not all([username, email, birth_date_str, gender, country]):
                 messagebox.showerror("Error", "All fields are required")
                 return
-                
-            if password != confirm:
-                messagebox.showerror("Error", "Passwords do not match")
-                return
-                
+            
             if not utils.validate_email(email):
                 messagebox.showerror("Error", "Invalid email format")
                 return
-                
-            if not utils.validate_password_strength(password):
-                messagebox.showerror("Error", "Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number")
+            
+            birth_date = validate_date(birth_date_str)
+            if not birth_date:
+                messagebox.showerror("Error", "Invalid date format. Use YYYY-MM-DD")
                 return
             
             # Register the user
-            success = self.db.register_user(username, password, email)
+            success = self.db.register_user(
+                username=username,
+                email=email,
+                birth_date=birth_date,
+                gender=gender,
+                country=country
+            )
             
             if success:
                 messagebox.showinfo("Success", "User registered successfully. You can now log in.")
@@ -335,7 +357,7 @@ class OscarsAppGUI:
             else:
                 messagebox.showerror("Error", "Failed to register user. Please try again.")
         
-        ttk.Button(dialog, text="Register", command=on_submit).pack(pady=10)
+        ttk.Button(dialog, text="Register", command=on_submit).pack(pady=20)
     
     def add_nomination(self):
         """Add a new user nomination for a staff member for a movie"""
