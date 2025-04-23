@@ -1,4 +1,3 @@
-
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 import threading
@@ -138,7 +137,8 @@ class OscarsAppGUI:
             ("🗺️ Staff by Country", self.view_staff_by_country),
             ("🎥 Dream Team", self.view_dream_team),
             ("🏢 Top Production Companies", self.view_top_production_companies),
-            ("🌐 Non-English Oscar Winners", self.view_non_english_winners)
+            ("🌐 Non-English Oscar Winners", self.view_non_english_winners),
+            ("👥 Staff List", self.view_staff_list)  # New feature button
         ]
         
         for text, command in features:
@@ -631,3 +631,27 @@ class OscarsAppGUI:
         columns = ["title", "language", "year", "category"]
         self.display_results_in_tree(movies, columns)
         self.update_status(f"Found {len(movies)} non-English Oscar-winning movies.")
+    
+    def view_staff_list(self):
+        """View list of staff members"""
+        self.update_status("Fetching staff list...")
+        
+        def fetch_thread():
+            staff_list = self.db.get_staff_list()
+            
+            # Update UI in the main thread
+            self.root.after(0, lambda: self.display_staff_list(staff_list))
+        
+        threading.Thread(target=fetch_thread).start()
+    
+    def display_staff_list(self, staff_list):
+        """Display staff list in the results area"""
+        if not staff_list:
+            self.clear_results()
+            self.display_text_results("No staff members found.")
+            self.update_status("No staff found.")
+            return
+        
+        columns = list(staff_list[0].keys())
+        self.display_results_in_tree(staff_list, columns)
+        self.update_status(f"Found {len(staff_list)} staff members.")

@@ -1,4 +1,3 @@
-
 import pymysql
 from typing import List, Dict, Any, Optional, Tuple
 
@@ -223,4 +222,18 @@ class Database:
                 return cursor.fetchall()
         except Exception as e:
             print(f"Error fetching non-English Oscar winners: {e}")
+            return []
+    
+    def get_staff_list(self, limit: int = 20) -> List[Dict[str, Any]]:
+        """Retrieve a list of staff members"""
+        if not self.connection:
+            self.connect()
+        
+        try:
+            with self.connection.cursor() as cursor:
+                # SQL: SELECT * FROM staff LIMIT %s
+                cursor.execute("SELECT * FROM staff LIMIT %s", (limit,))
+                return cursor.fetchall()
+        except Exception as e:
+            print(f"Error fetching staff list: {e}")
             return []
