@@ -32,11 +32,24 @@ def build_executable():
     # Create PyInstaller command
     pyinstaller_options = [
         "--name", app_name,
-        "--onefile",  # Single executable file
-        "--windowed",  # No console window in Windows
-        "--clean",     # Clean PyInstaller cache
-        "--add-data", f"src/;src/",  # Include the source directory
+        "--onefile",    # Single executable file
+        "--windowed",   # No console window in Windows
+        "--clean",      # Clean PyInstaller cache
     ]
+    
+    # Add Python source files
+    python_files = [
+        "src/main.py",
+        "src/gui.py",
+        "src/database.py",
+        "src/models.py",
+        "src/utils.py"
+    ]
+    
+    for file in python_files:
+        if os.path.exists(file):
+            base_dir = os.path.dirname(file)
+            pyinstaller_options.extend(["--add-data", f"{file}{os.pathsep}{base_dir}"])
     
     # Add icon if available
     icon_path = "oscar_icon.ico"
@@ -46,7 +59,7 @@ def build_executable():
     pyinstaller_options.append(main_script)
     
     # Run PyInstaller
-    print("Running PyInstaller...")
+    print("Running PyInstaller with options:", pyinstaller_options)
     subprocess.check_call([sys.executable, "-m", "PyInstaller"] + pyinstaller_options)
     
     print(f"Build completed. Executable created in dist/{app_name}")
