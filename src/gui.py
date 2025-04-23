@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 import threading
-from typing import Callable, Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional
 from datetime import datetime, date
 from database import Database
 import utils
@@ -32,7 +32,7 @@ class OscarsAppGUI:
         self.style = ttk.Style()
         self.style.configure("TFrame", background=self.bg_color)
         self.style.configure("Gold.TLabel", background=self.bg_color, foreground=self.accent_color, font=("Arial", 16, "bold"))
-        self.style.configure("TLabel", background=self.bg_color, foreground=self.text_color, font=("Arial", 12))
+        self.style.configure("TLabel", background=self.bg_color, foreground=self.text_color, font=("Arial", 12"))
         self.style.configure("TButton", 
                             background=self.button_bg, 
                             foreground=self.button_fg, 
@@ -49,9 +49,9 @@ class OscarsAppGUI:
         
         # Initialize database connection
         self.check_database_connection()
-        
+    
     def create_header_frame(self):
-        """Create the header frame with title and user info"""
+        """Create the header frame with title"""
         self.header_frame = ttk.Frame(self.root)
         self.header_frame.pack(fill=tk.X, padx=20, pady=10)
         
@@ -63,24 +63,7 @@ class OscarsAppGUI:
             font=("Arial", 24, "bold")
         )
         self.title_label.pack(side=tk.LEFT, pady=10)
-        
-        # User info/login
-        self.user_frame = ttk.Frame(self.header_frame)
-        self.user_frame.pack(side=tk.RIGHT, pady=10)
-        
-        self.login_button = tk.Button(
-            self.user_frame,
-            text="Login/Register",
-            bg=self.button_bg,
-            fg=self.button_fg,
-            font=("Arial", 10),
-            command=self.show_login_dialog
-        )
-        self.login_button.pack(side=tk.RIGHT)
-        
-        self.user_label = ttk.Label(self.user_frame, text="Not logged in")
-        self.user_label.pack(side=tk.RIGHT, padx=10)
-        
+    
     def create_main_frame(self):
         """Create the main content frame with feature buttons and results area"""
         self.main_frame = ttk.Frame(self.root)
@@ -212,76 +195,8 @@ class OscarsAppGUI:
         self.results_text.delete(1.0, tk.END)
         self.results_text.insert(tk.END, text)
     
-    def check_database_connection(self):
-        """Check and establish database connection"""
-        self.update_status("Connecting to database...")
-        
-        def connection_thread():
-            success = self.db.connect()
-            if success:
-                self.update_status("Connected to database.")
-            else:
-                self.update_status("Database connection failed!")
-                messagebox.showerror("Connection Error", 
-                                    "Failed to connect to the database. Check your internet connection and try again.")
-        
-        # Run connection in a separate thread to avoid freezing the UI
-        threading.Thread(target=connection_thread).start()
-    
-    def show_login_dialog(self):
-        """Show login/register dialog"""
-        dialog = tk.Toplevel(self.root)
-        dialog.title("Login/Register")
-        dialog.geometry("300x200")
-        dialog.transient(self.root)
-        dialog.grab_set()
-        
-        ttk.Label(dialog, text="Username:").pack(pady=(10, 5))
-        username_entry = ttk.Entry(dialog, width=30)
-        username_entry.pack(pady=5)
-        
-        ttk.Label(dialog, text="Password:").pack(pady=5)
-        password_entry = ttk.Entry(dialog, width=30, show="*")
-        password_entry.pack(pady=5)
-        
-        btn_frame = ttk.Frame(dialog)
-        btn_frame.pack(pady=10)
-        
-        def on_register():
-            username = username_entry.get()
-            password = password_entry.get()
-            
-            if not username or not password:
-                messagebox.showerror("Error", "Please enter both username and password")
-                return
-            
-            # For now, just close the dialog
-            messagebox.showinfo("Registration", "Registration feature will be implemented in the next phase")
-            dialog.destroy()
-        
-        def on_login():
-            username = username_entry.get()
-            password = password_entry.get()
-            
-            if not username or not password:
-                messagebox.showerror("Error", "Please enter both username and password")
-                return
-            
-            # For now, simulate login
-            self.current_user = {"id": 1, "username": username}
-            self.user_label.config(text=f"Logged in as: {username}")
-            dialog.destroy()
-        
-        ttk.Button(btn_frame, text="Login", command=on_login).pack(side=tk.LEFT, padx=5)
-        ttk.Button(btn_frame, text="Register", command=on_register).pack(side=tk.LEFT, padx=5)
-        
-    # Feature button callback functions
     def register_user(self):
-        """Register a new user with extended attributes"""
-        if self.current_user:
-            messagebox.showinfo("Already Logged In", "You are already logged in. Log out to register a new user.")
-            return
-            
+        """Register a new user with required attributes"""
         dialog = tk.Toplevel(self.root)
         dialog.title("Register User")
         dialog.geometry("400x500")
@@ -352,7 +267,7 @@ class OscarsAppGUI:
             )
             
             if success:
-                messagebox.showinfo("Success", "User registered successfully. You can now log in.")
+                messagebox.showinfo("Success", "User registered successfully!")
                 dialog.destroy()
             else:
                 messagebox.showerror("Error", "Failed to register user. Please try again.")
@@ -677,3 +592,19 @@ class OscarsAppGUI:
         columns = list(staff_list[0].keys())
         self.display_results_in_tree(staff_list, columns)
         self.update_status(f"Found {len(staff_list)} staff members.")
+    
+    def check_database_connection(self):
+        """Check and establish database connection"""
+        self.update_status("Connecting to database...")
+        
+        def connection_thread():
+            success = self.db.connect()
+            if success:
+                self.update_status("Connected to database.")
+            else:
+                self.update_status("Database connection failed!")
+                messagebox.showerror("Connection Error", 
+                                    "Failed to connect to the database. Check your internet connection and try again.")
+        
+        # Run connection in a separate thread to avoid freezing the UI
+        threading.Thread(target=connection_thread).start()
